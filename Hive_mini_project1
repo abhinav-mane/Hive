@@ -1,0 +1,443 @@
+This is a real time dataset of the ineuron technical consultant team. You have to perform hive analysis on this given dataset.
+
+Download Dataset 1 - https://drive.google.com/file/d/1WrG-9qv6atP-W3P_-gYln1hHyFKRKMHP/view
+
+Download Dataset 2 - https://drive.google.com/file/d/1-JIPCZ34dyN6k9CqJa-Y8yxIGq6vTVXU/view
+
+Note: both files are csv files. 
+
+
+1. Create a schema based on the given dataset
+
+hadoop fs -copyFromLocal AgentPerformance.csv /tmp/Hive_mini_project1
+hadoop fs -copyFromLocal AgentLogingReport.csv /tmp/Hive_mini_project1
+
+create table agent_performance(
+    > sl_no int,
+    > Date date,
+    > agent_name string,
+    > total_chats int,
+    > avg_response_time string,
+    > avg_resolution_time string,
+    > avg_rating float,
+    > total_feedback int)
+    > row format delimited
+    > fields terminated by ','
+    > tblproperties("skip.header.line.count"="1");
+
+create table agent_loging(
+    > sl_no int,
+    > agent string,
+    > Date date,
+    > login_time string,
+    > logout_time string,
+    > duration string)
+    > row format delimited
+    > fields terminated by ','
+    > tblproperties("skip.header.line.count"="1");
+
+
+
+2. Dump the data inside the hdfs in the given schema location.
+
+load data inpath '/tmp/Hive_mini_project1/AgentPerformance.csv' into table agent_performance;
+load data inpath '/tmp/Hive_mini_project1/AgentLogingReport.csv' into table agent_loging;
+
+
+3. List of all agents' names. 
+
+SELECT DISTINCT agent from agent_loging;
+
+output:-
+Aditya Shinde
+Aditya_iot
+Amersh
+Ameya Jain
+Ankitjha
+Anurag Tiwari
+Aravind
+Ayushi Mishra
+Bharath
+Boktiar Ahmed Bappy
+Chaitra K Hiremath
+Deepranjan Gupta
+Dibyanshu
+Harikrishnan Shaji
+Hrisikesh Neogi
+Hyder Abbas
+Ineuron Intelligence
+Ishawant Kumar
+Jawala Prakash
+Jaydeep Dixit
+Khushboo Priya
+Madhulika G
+Mahesh Sarade
+Maitry
+Manjunatha A
+Mithun S
+Mukesh
+Muskan Garg
+Nandani Gupta
+Nishtha Jain
+Nitin M
+Prabir Kumar Satapathy
+Prateek _iot
+Prerna Singh
+Rishav Dash
+Saikumarreddy N
+Sanjeev Kumar
+Saurabh Shukla
+Shiva Srivastava
+Shivan K
+Shivananda Sonwane
+Shubham Sharma
+Sowmiya Sivakumar
+Sudhanshu Kumar
+Suraj S Bilgi
+Swati
+Tarun
+Wasim
+Zeeshan
+
+4. Find out agent average rating.
+
+select avg(avg_rating),agent_name from agent_performance group by agent_name limit 10;
+
+output:-
+_c0	avg_agent_rating
+0.0	Abhishek 
+0.0	Aditya 
+1.8003333409627278	Aditya Shinde
+2.3453333377838135	Aditya_iot 
+0.0	Amersh 
+2.21966667175293	Ameya Jain
+0.6449999968210857	Anirudh 
+0.0	Ankit Sharma
+0.26666666666666666	Ankitjha 
+0.18333333333333332	Anurag Tiwari
+
+
+5. Total working days for each agents 
+
+select count(date) as tot_working_days,agent from agent_loging group by agent limit 10;
+
+output:-
+tot_working_days	agent
+1	Aditya Shinde
+9	Aditya_iot
+4	Amersh
+10	Ameya Jain
+4	Ankitjha
+37	Anurag Tiwari
+10	Aravind
+18	Ayushi Mishra
+9	Bharath
+17	Boktiar Ahmed Bappy
+
+
+6. Total query that each agent have taken 
+
+select sum(total_chats) as tot_queries,agent_name from agent_performance group by agent_name limit 10;
+
+output:-
+tot_queries	agent_name
+0	Abhishek 
+0	Aditya 
+277	Aditya Shinde
+231	Aditya_iot 
+0	Amersh 
+322	Ameya Jain
+81	Anirudh 
+0	Ankit Sharma
+5	Ankitjha 
+4	Anurag Tiwari
+
+
+7. Total Feedback that each agent have received 
+
+select sum(total_feedback) as Total_feedback,agent_name from agent_performance group by agent_name limit 10;
+
+output:-
+total_feedback	agent_name
+0	Abhishek 
+0	Aditya 
+153	Aditya Shinde
+131	Aditya_iot 
+0	Amersh 
+228	Ameya Jain
+39	Anirudh 
+0	Ankit Sharma
+3	Ankitjha 
+3	Anurag Tiwari
+
+8. Agent name who have average rating between 3.5 to 4
+
+select avg_rating,agent_name from agent_performance where avg_rating BETWEEN 3.5 and 4 limit 10;
+
+output:-
+avg_rating	agent_name
+3.67	Swati 
+3.6	Manjunatha A
+4.0	Boktiar Ahmed Bappy
+3.75	Prateek _iot 
+3.79	Nandani Gupta
+3.95	Jaydeep Dixit
+3.94	Mahesh Sarade
+3.79	Zeeshan 
+3.77	Hrisikesh Neogi
+4.0	Muskan Garg
+ 
+9. Agent name who have rating less than 3.5 
+
+select avg_rating,agent_name from agent_performance where avg_rating<3.5 limit 10;
+
+output:-
+avg_rating	agent_name
+3.14	Nandani Gupta
+0.0	Hitesh Choudhary
+0.0	Sanjeevan 
+0.0	Anirudh 
+0.0	Shiva Srivastava
+0.0	Dibyanshu 
+0.0	Ashish 
+0.0	Uday Mishra
+0.0	Aditya Shinde
+0.0	Jayant Kumar
+
+10. Agent name who have rating more than 4.5 
+
+select avg_rating,agent_name from agent_performance where avg_rating>4.5 limit 10;
+
+output:-
+avg_rating	agent_name
+4.55	Ameya Jain
+4.71	Mahesh Sarade
+4.62	Mukesh 
+5.0	Saikumarreddy N
+5.0	Sanjeev Kumar
+4.57	Harikrishnan Shaji
+4.75	Sowmiya Sivakumar
+4.75	Boktiar Ahmed Bappy
+5.0	Shivananda Sonwane
+4.67	Ishawant Kumar
+
+
+
+11. How many feedback agents have received more than 4.5 average
+
+select avg(total_feedback) as avg_feedback,agent_name from agent_performance group by agent_name having avg(total_feedback) > 4.5 limit 10;
+
+output:-
+avg_feedback	agent_name
+5.1	Aditya Shinde
+7.6	Ameya Jain
+7.766666666666667	Aravind 
+10.966666666666667	Ayushi Mishra
+8.233333333333333	Bharath 
+10.366666666666667	Boktiar Ahmed Bappy
+10.4	Deepranjan Gupta
+7.7	Harikrishnan Shaji
+12.233333333333333	Hrisikesh Neogi
+6.733333333333333	Ishawant Kumar
+
+12. average weekly response time for each agent
+
+select s.agent_name,avg(col1[0]*3600+col1[1]*60+col1[2])/3600 from (select agent_name,split(avg_response_time,':') as col1 from agent_performance)s group by s.agent_name;
+
+output:-
+s.agent_name	_c1
+Abhishek 	0.0
+Aditya 	0.0
+Aditya Shinde	0.00825925925925926
+Aditya_iot 	0.009435185185185185
+Amersh 	0.0
+Ameya Jain	0.00587037037037037
+Anirudh 	0.006046296296296296
+Ankit Sharma	0.0
+Ankitjha 	0.0012314814814814816
+Anurag Tiwari	0.0023425925925925927
+Aravind 	0.005935185185185186
+Ashad Nasim	0.01073148148148148
+Ashish 	0.0
+Ayushi Mishra	0.01675925925925926
+Bharath 	0.0074444444444444445
+
+ 
+13. average weekly resolution time for each agents 
+
+select s.agent_name,avg(col1[0]*3600+col1[1]*60+col1[2])/3600 from (select agent_name,split(avg_resolution_time,':') as col1 from agent_performance)s group by s.agent_name;
+
+output:-
+s.agent_name	_c1
+Abhishek 	0.0
+Aditya 	0.0
+Aditya Shinde	0.17239814814814813
+Aditya_iot 	0.16369444444444442
+Amersh 	0.0
+Ameya Jain	0.09125
+Anirudh 	0.05151851851851852
+Ankit Sharma	0.0
+Ankitjha 	0.01512962962962963
+Anurag Tiwari	0.020537037037037038
+Aravind 	0.14876851851851852
+Ashad Nasim	0.005814814814814815
+Ashish 	0.0
+Ayushi Mishra	0.25627777777777777
+Bharath 	0.1798888888888889
+Boktiar Ahmed Bappy	0.2843981481481482
+Chaitra K Hiremath	0.024712962962962964
+Deepranjan Gupta	0.3475462962962963
+Dibyanshu 	0.006851851851851852
+Harikrishnan Shaji	0.18845370370370368
+Hitesh Choudhary	7.87037037037037E-4
+Hrisikesh Neogi	0.25730555555555557
+Hyder Abbas	0.0
+Ineuron Intelligence 	0.0
+
+14. Find the number of chat on which they have received a feedback 
+select agent_name,sum(total_chats),total_feedback from agent_performance where total_feedback > 0 group by agent_name,total_feedback limit 10;
+
+output:-
+agent_name	_c1	total_feedback
+Aditya Shinde	8	7
+Aditya Shinde	17	8
+Aditya Shinde	67	9
+Aditya Shinde	18	11
+Aditya Shinde	27	14
+Aditya Shinde	49	15
+Aditya Shinde	34	19
+Aditya Shinde	57	28
+Aditya_iot 	11	2
+Aditya_iot 	10	3
+
+15. Total contribution hour for each and every agents weekly basis 
+
+select s.agent,sum(col1[0]*3600+col1[1]*60+col1[2])/3600,s.weekly from (select agent,split(duration,':') as col1, weekofyear(Date) as weekly from agent_loging)s group by s.agent,s.weekly limit 10;
+
+output:-
+s.agent	_c1	s.weekly
+Aditya Shinde	0.03611111111111111	30
+Aditya_iot	6.095277777777778	29
+Aditya_iot	9.635833333333334	30
+Amersh	3.063888888888889	30
+Ameya Jain	24.083055555555557	29
+Ameya Jain	17.9925	30
+Ankitjha	2.2669444444444444	30
+Anurag Tiwari	0.2644444444444444	29
+Anurag Tiwari	2.5144444444444445	30
+Aravind	24.235555555555557	29
+
+16. Perform inner join, left join and right join based on the agent column and after joining the table export that data into your local system.
+
+Inner Join-------------------------------------------------------------------------------------------------------------------------------------
+
+select alr.agent,alr.date,ap.total_chats,ap.total_feedback from agent_loging alr join agent_performance ap on alr.agent=ap.agent_name limit 10;
+
+Output:-
+alr.agent	alr.date	ap.total_chats	ap.total_feedback
+Prerna Singh	2022-07-30	11	9
+Prerna Singh	2022-07-29	11	9
+Prerna Singh	2022-07-29	11	9
+Prerna Singh	2022-07-29	11	9
+Prerna Singh	2022-07-27	11	9
+Prerna Singh	2022-07-26	11	9
+Prerna Singh	2022-07-26	11	9
+Prerna Singh	2022-07-26	11	9
+Prerna Singh	2022-07-26	11	9
+Prerna Singh	2022-07-26	11	9
+
+
+exporting:-
+
+hive -e 'select alr.agent,alr.date,ap.total_chats,ap.total_feedback from agent_loging alr join agent_performance ap on alr.agent=ap.agent_name'> /home/cloudera/innerjoin.csv
+
+Left Join--------------------------------------------------------------------------------------------------------------------------------------
+
+select alr.agent,alr.date,ap.total_chats,ap.total_feedback from agent_loging alr left join agent_performance ap on alr.agent=ap.agent_name limit 10;
+
+output:-
+alr.agent	alr.date	ap.total_chats	ap.total_feedback
+Shivananda Sonwane	2022-07-30	4	1
+Shivananda Sonwane	2022-07-30	14	9
+Shivananda Sonwane	2022-07-30	5	4
+Shivananda Sonwane	2022-07-30	26	18
+Shivananda Sonwane	2022-07-30	24	14
+Shivananda Sonwane	2022-07-30	13	8
+Shivananda Sonwane	2022-07-30	8	5
+Shivananda Sonwane	2022-07-30	20	13
+Shivananda Sonwane	2022-07-30	16	9
+Shivananda Sonwane	2022-07-30	7	6
+
+
+Exporting:-
+
+hive -e 'select alr.agent,alr.date,ap.total_chats,ap.total_feedback from agent_loging alr left join agent_performance ap on alr.agent=ap.agent_name'> /home/cloudera/leftjoin.csv
+
+Right Join------------------------------------------------------------------------------------------------------------------------------------------
+
+select alr.agent,alr.date,ap.total_chats,ap.total_feedback from agent_loging alr right join agent_performance ap on alr.agent=ap.agent_name limit 10;
+
+Output:-
+alr.agent	alr.date	ap.total_chats	ap.total_feedback
+Prerna Singh	2022-07-30	11	9
+Prerna Singh	2022-07-29	11	9
+Prerna Singh	2022-07-29	11	9
+Prerna Singh	2022-07-29	11	9
+Prerna Singh	2022-07-27	11	9
+Prerna Singh	2022-07-26	11	9
+Prerna Singh	2022-07-26	11	9
+Prerna Singh	2022-07-26	11	9
+Prerna Singh	2022-07-26	11	9
+Prerna Singh	2022-07-26	11	9
+
+
+Exporting:-
+
+hive -e 'select alr.agent,alr.date,ap.total_chats,ap.total_feedback from agent_loging alr right join agent_performance ap on alr.agent=ap.agent_name'> /home/cloudera/rightjoin.csv
+
+17. Perform partitioning on top of the agent column and then on top of that perform bucketing for each partitioning.
+
+hive> set hive.exec.dynamic.partition=True;
+hive> set hive.exec.dynamic.partition.mode=nonstrict;
+
+create table ap_partition_bucket(
+    > sl_no int,
+    > Date date,
+    > total_chats int,
+    > avg_response_time string,
+    > avg_resolution_time string,
+    > avg_rating float,
+    > total_feedback int)
+    > partitioned by (agent_name string)
+    > CLUSTERED BY (Date) sorted by (Date) INTO 8 BUCKETS
+    > row format delimited
+    > fields terminated by ',';
+
+insert into ap_partition_bucket partition (agent_name) select sl_no,Date,total_chats,avg_response_time,avg_resolution_time,avg_rating,total_feedback,agent_name from agent_performance;
+
+
+
+create table al_partition_bucket(
+    > sl_no int,
+    > Date date,
+    > login_time string,
+    > logout_time string,
+    > duration string)
+    > partitioned by (Agent string)
+    > CLUSTERED BY (Date) sorted by (Date) INTO 4 BUCKETS
+    > row format delimited
+    > fields terminated by ',';
+
+
+insert into al_partition_bucket partition (Agent) select sl_no,Date,login_time,logout_time,Duration,Agent from agent_loging;
+
+
+
+
+
+
+
+
+
+
+
